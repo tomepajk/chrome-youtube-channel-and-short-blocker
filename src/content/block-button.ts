@@ -5,7 +5,6 @@ import { showUndoToast } from './toast';
 import { CARD_MARK_ATTR, cardSelector } from './selectors';
 
 const PROCESSED_ATTR = 'data-ytdb-btn';
-const STYLE_ID = 'ytdb-card-styles';
 
 function findChannelNameLink(card: Element): HTMLAnchorElement | null {
   const links = card.querySelectorAll<HTMLAnchorElement>(
@@ -25,68 +24,6 @@ function findChannelNameLink(card: Element): HTMLAnchorElement | null {
   return avatarLink;
 }
 
-export function ensureBlockButtonStyles(): void {
-  if (document.getElementById(STYLE_ID)) return;
-  if (!document.head) return;
-  const style = document.createElement('style');
-  style.id = STYLE_ID;
-  style.textContent = `
-    button.ytdb-block-btn {
-      display: block;
-      width: calc(100% - 16px);
-      margin: 8px 8px 4px;
-      padding: 6px 10px;
-      font: 500 12px Roboto, Arial, sans-serif;
-      color: #606060;
-      background: rgba(127,127,127,0.08);
-      border: 1px solid rgba(127,127,127,0.25);
-      border-radius: 8px;
-      cursor: pointer;
-      text-align: center;
-      box-sizing: border-box;
-      opacity: 0.55;
-      transition: opacity 0.15s, background 0.15s, border-color 0.15s, color 0.15s;
-    }
-    html[dark] button.ytdb-block-btn,
-    ytd-app[dark] button.ytdb-block-btn,
-    [dark] button.ytdb-block-btn {
-      color: #aaa;
-      background: rgba(255,255,255,0.06);
-      border-color: rgba(255,255,255,0.15);
-    }
-    [${CARD_MARK_ATTR}="1"]:hover button.ytdb-block-btn,
-    button.ytdb-block-btn:focus-visible {
-      opacity: 1;
-    }
-    button.ytdb-block-btn:hover {
-      background: rgba(204,0,0,0.12);
-      border-color: rgba(204,0,0,0.5);
-      color: #cc0000;
-      opacity: 1;
-    }
-    html[dark] button.ytdb-block-btn:hover,
-    ytd-app[dark] button.ytdb-block-btn:hover,
-    [dark] button.ytdb-block-btn:hover {
-      background: rgba(255,82,82,0.18);
-      border-color: rgba(255,82,82,0.6);
-      color: #ff5252;
-    }
-    @media (prefers-color-scheme: dark) {
-      button.ytdb-block-btn {
-        color: #aaa;
-        background: rgba(255,255,255,0.06);
-        border-color: rgba(255,255,255,0.15);
-      }
-      button.ytdb-block-btn:hover {
-        background: rgba(255,82,82,0.18);
-        border-color: rgba(255,82,82,0.6);
-        color: #ff5252;
-      }
-    }
-  `;
-  document.head.appendChild(style);
-}
-
 export function injectBlockButton(card: HTMLElement): void {
   if (card.getAttribute(PROCESSED_ATTR) === '1') return;
   if (card.parentElement?.closest(`[${PROCESSED_ATTR}="1"]`)) return;
@@ -94,7 +31,10 @@ export function injectBlockButton(card: HTMLElement): void {
   const channelLink = findChannelNameLink(card);
   if (!channelLink) return;
 
-  if (card.parentElement?.closest(cardSelector)?.getAttribute(PROCESSED_ATTR) === '1') {
+  if (
+    card.parentElement?.closest(cardSelector)?.getAttribute(PROCESSED_ATTR) ===
+    '1'
+  ) {
     return;
   }
 
