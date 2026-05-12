@@ -1,0 +1,232 @@
+:root {
+  color-scheme: light dark;
+  --bg: #f7f7f7;
+  --card-bg: #fff;
+  --fg: #1a1a1a;
+  --muted: #6b6b6b;
+  --border: #e3e3e3;
+  --accent: #c0392b;
+  --accent-hover: #a93226;
+  --link: #2563eb;
+  --row-hover: #f5f5f5;
+  --btn-bg: #ececec;
+  --btn-bg-hover: #dcdcdc;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0f0f0f;
+    --card-bg: #1c1c1c;
+    --fg: #f1f1f1;
+    --muted: #9a9a9a;
+    --border: #2c2c2c;
+    --accent: #ff5252;
+    --accent-hover: #ff7676;
+    --link: #3ea6ff;
+    --row-hover: #262626;
+    --btn-bg: #2a2a2a;
+    --btn-bg-hover: #383838;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: Roboto, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+.page {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 32px 20px 80px;
+}
+
+.page-header {
+  margin-bottom: 24px;
+}
+
+.page-header h1 {
+  margin: 0 0 6px;
+  font-size: 22px;
+  font-weight: 600;
+}
+
+.subtitle {
+  margin: 0;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.card {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.card h2 {
+  margin: 0 0 8px;
+  font-size: 16px;
+}
+
+.muted {
+  color: var(--muted);
+  font-size: 13px;
+  margin: 0 0 12px;
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+
+#search {
+  flex: 1;
+  min-width: 200px;
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg);
+  color: var(--fg);
+  font: inherit;
+}
+
+.toolbar-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.meta {
+  font-size: 12px;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+
+.btn {
+  appearance: none;
+  border: 1px solid var(--border);
+  background: var(--btn-bg);
+  color: var(--fg);
+  padding: 7px 14px;
+  border-radius: 8px;
+  font: inherit;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+.btn:hover {
+  background: var(--btn-bg-hover);
+}
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.btn-danger {
+  background: transparent;
+  color: var(--accent);
+  border-color: var(--accent);
+}
+.btn-danger:not(:disabled):hover {
+  background: rgba(192, 57, 43, 0.1);
+}
+
+.file-label {
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.blocklist {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--border);
+}
+
+.blocklist li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 4px;
+  border-bottom: 1px solid var(--border);
+}
+
+.blocklist li:hover {
+  background: var(--row-hover);
+}
+
+.blocklist input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+  accent-color: var(--accent);
+}
+
+.channel {
+  flex: 1;
+  min-width: 0;
+}
+
+.channel-name {
+  display: block;
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.channel-handle {
+  display: block;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.unblock-btn {
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--muted);
+  padding: 4px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  font: inherit;
+  font-size: 13px;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+.unblock-btn:hover {
+  background: rgba(192, 57, 43, 0.1);
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+.empty-state {
+  padding: 24px;
+  color: var(--muted);
+  text-align: center;
+}
+
+.status {
+  margin: 12px 0 0;
+  min-height: 1.2em;
+  font-size: 13px;
+  color: var(--muted);
+}
+.status.error {
+  color: var(--accent);
+}
+.status.success {
+  color: #2e7d32;
+}

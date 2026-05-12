@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>YouTube Distraction Blocker</title>
+    <link rel="stylesheet" href="./popup.css" />
+  </head>
+  <body>
+    <header class="header">
+      <h1>YT Distraction Blocker</h1>
+      <div class="counters">
+        <span>Today: <strong id="hidden-today">0</strong></span>
+        <span>Total: <strong id="hidden-total">0</strong></span>
+      </div>
+    </header>
+
+    <section class="settings">
+      <label class="toggle">
+        <input type="checkbox" id="shorts-toggle" />
+        <span>Hide all Shorts</span>
+      </label>
+    </section>
+
+    <section class="blocklist-section">
+      <div class="blocklist-header">
+        <h2>Blocked channels (<span id="blocklist-count">0</span>)</h2>
+        <a href="#" id="open-options" class="link">Manage all…</a>
+      </div>
+      <ul id="blocklist" class="blocklist"></ul>
+      <p id="empty-state" class="empty-state" hidden>
+        No channels blocked yet. Hover any channel name on YouTube and click
+        Block.
+      </p>
+    </section>
+
+    <script type="module" src="./popup.ts"></script>
+  </body>
+</html>
