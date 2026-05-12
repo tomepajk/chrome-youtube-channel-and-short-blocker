@@ -25,10 +25,34 @@ function isExtensionAlive(): boolean {
   }
 }
 
+let migrationPromise: Promise<void> | null = null;
+async function ensureSyncToLocalMigration(): Promise<void> {
+  if (migrationPromise) return migrationPromise;
+  migrationPromise = (async () => {
+    if (!isExtensionAlive()) return;
+    try {
+      const keys = [KEY_BLOCKLIST, KEY_SETTINGS, KEY_COUNTERS];
+      const local = await chrome.storage.local.get(keys);
+      if (keys.some((k) => local[k] !== undefined)) return;
+      const sync = await chrome.storage.sync.get(keys);
+      const toCopy: Record<string, unknown> = {};
+      for (const k of keys) if (sync[k] !== undefined) toCopy[k] = sync[k];
+      if (Object.keys(toCopy).length > 0) {
+        await chrome.storage.local.set(toCopy);
+        console.log('[ytdb] migrated from sync to local:', Object.keys(toCopy));
+      }
+    } catch (err) {
+      console.error('[ytdb] migration failed', err);
+    }
+  })();
+  return migrationPromise;
+}
+
 async function safeGet<T>(key: string, fallback: T): Promise<T> {
   if (!isExtensionAlive()) return fallback;
+  await ensureSyncToLocalMigration();
   try {
-    const result = await chrome.storage.sync.get(key);
+    const result = await chrome.storage.local.get(key);
     return (result[key] as T | undefined) ?? fallback;
   } catch {
     return fallback;
@@ -37,10 +61,11 @@ async function safeGet<T>(key: string, fallback: T): Promise<T> {
 
 async function safeSet(payload: Record<string, unknown>): Promise<void> {
   if (!isExtensionAlive()) return;
+  await ensureSyncToLocalMigration();
   try {
-    await chrome.storage.sync.set(payload);
-  } catch {
-    // extension context invalidated or quota exceeded
+    await chrome.storage.local.set(payload);
+  } catch (err) {
+    console.error('[ytdb] safeSet FAILED', err, payload);
   }
 }
 
@@ -80,8 +105,10 @@ export async function addBlockedChannel(entry: BlockedChannel): Promise<void> {
       (entry.id && c.id === entry.id) ||
       (entry.handle && c.handle === entry.handle),
   );
+  console.log('[ytdb] 2. addBlockedChannel', { entry, exists, currentListSize: list.length });
   if (exists) return;
   await setBlockedChannels([...list, entry]);
+  console.log('[ytdb] 2b. setBlockedChannels written, new size:', list.length + 1);
 }
 
 export async function removeBlockedChannel(idOrHandle: string): Promise<void> {
@@ -98,7 +125,7 @@ export function onBlocklistChange(
   cb: (list: BlockedChannel[]) => void,
 ): () => void {
   return safeOnChanged((changes, area) => {
-    if (area === 'sync' && changes[KEY_BLOCKLIST]) {
+    if (area === 'local' && changes[KEY_BLOCKLIST]) {
       cb((changes[KEY_BLOCKLIST].newValue as BlockedChannel[] | undefined) ?? []);
     }
   });
@@ -127,7 +154,7 @@ export async function setSettings(patch: Partial<Settings>): Promise<void> {
 
 export function onSettingsChange(cb: (settings: Settings) => void): () => void {
   return safeOnChanged((changes, area) => {
-    if (area === 'sync' && changes[KEY_SETTINGS]) {
+    if (area === 'local' && changes[KEY_SETTINGS]) {
       cb({
         ...DEFAULT_SETTINGS,
         ...((changes[KEY_SETTINGS].newValue as Settings | undefined) ?? {}),
@@ -178,7 +205,7 @@ export function incrementHiddenCount(by = 1): void {
 
 export function onCountersChange(cb: (c: Counters) => void): () => void {
   return safeOnChanged((changes, area) => {
-    if (area === 'sync' && changes[KEY_COUNTERS]) {
+    if (area === 'local' && changes[KEY_COUNTERS]) {
       void getCounters().then(cb);
     }
   });

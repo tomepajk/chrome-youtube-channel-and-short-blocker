@@ -1,28 +1,21 @@
 import { getSettings, onSettingsChange } from '../storage';
 
 const SHORTS_HIDDEN_ATTR = 'data-ytdb-shorts-hidden';
-const STYLE_ID = 'ytdb-shorts-styles';
 const REDIRECT_TARGET = 'https://www.youtube.com/';
 
-const SHORTS_SHELF_SELECTORS = [
+const SHORTS_SELECTORS = [
   'ytd-reel-shelf-renderer',
   'ytd-rich-shelf-renderer[is-shorts]',
   'ytd-rich-section-renderer:has(ytd-rich-shelf-renderer[is-shorts])',
   'ytd-rich-section-renderer:has(ytd-reel-shelf-renderer)',
   'ytd-rich-section-renderer:has(a[href^="/shorts/"])',
   'grid-shelf-view-model',
-];
-
-const SHORTS_ITEM_SELECTORS = [
   'ytd-reel-item-renderer',
   'ytm-shorts-lockup-view-model',
   'ytm-shorts-lockup-view-model-v2',
   'ytd-video-renderer:has(a[href^="/shorts/"])',
   'ytd-rich-item-renderer:has(a[href^="/shorts/"])',
   'yt-lockup-view-model:has(a[href^="/shorts/"])',
-];
-
-const NAV_SHORTS_SELECTORS = [
   'ytd-mini-guide-entry-renderer[aria-label="Shorts"]',
   'ytd-guide-entry-renderer:has(a[title="Shorts"])',
   'a[title="Shorts"]',
@@ -30,29 +23,8 @@ const NAV_SHORTS_SELECTORS = [
 
 let hideAllShorts = true;
 
-function ensureStyles(): void {
-  if (document.getElementById(STYLE_ID)) return;
-  if (!document.head) return;
-  const style = document.createElement('style');
-  style.id = STYLE_ID;
-  const allSel = [
-    ...SHORTS_SHELF_SELECTORS,
-    ...SHORTS_ITEM_SELECTORS,
-    ...NAV_SHORTS_SELECTORS,
-  ]
-    .map((s) => `${s}[${SHORTS_HIDDEN_ATTR}="1"]`)
-    .join(',\n');
-  style.textContent = `${allSel} { display: none !important; }`;
-  document.head.appendChild(style);
-}
-
 function applyAttrs(): void {
-  const all = [
-    ...SHORTS_SHELF_SELECTORS,
-    ...SHORTS_ITEM_SELECTORS,
-    ...NAV_SHORTS_SELECTORS,
-  ];
-  for (const sel of all) {
+  for (const sel of SHORTS_SELECTORS) {
     let nodes: NodeListOf<Element>;
     try {
       nodes = document.querySelectorAll(sel);
@@ -80,10 +52,8 @@ function checkShortsRedirect(): void {
 }
 
 export function startShorts(): void {
-  ensureStyles();
   void getSettings().then((settings) => {
     hideAllShorts = settings.hideAllShorts;
-    ensureStyles();
     checkShortsRedirect();
     applyAttrs();
   });
@@ -104,7 +74,6 @@ export function startShorts(): void {
     pending = true;
     requestAnimationFrame(() => {
       pending = false;
-      ensureStyles();
       if (hideAllShorts) applyAttrs();
     });
   };

@@ -21,7 +21,9 @@ export function processCardForHiding(
   blocked: BlockedChannel[],
 ): void {
   const channel = extractChannelFromCard(card);
-  if (isBlocked(channel, blocked)) {
+  const blockedMatch = isBlocked(channel, blocked);
+  if (blockedMatch) {
+    console.log('[ytdb] 4. processCardForHiding MATCH → hiding', { channel, card });
     if (hide(card)) incrementHiddenCount(1);
   } else {
     show(card);
