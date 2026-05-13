@@ -9,9 +9,9 @@ const WATCH_TIMEOUT_MS = 5000;
 export function getCurrentChannelFromUrl(): ChannelRef {
   const path = location.pathname;
   if (path.startsWith('/@') || path.startsWith('/channel/')) {
-    return parseChannelHref(path);
+    return { ...parseChannelHref(path), name: null };
   }
-  return { id: null, handle: null };
+  return { id: null, handle: null, name: null };
 }
 
 function waitForElement(

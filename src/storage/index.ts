@@ -100,11 +100,15 @@ export async function setBlockedChannels(list: BlockedChannel[]): Promise<void> 
 
 export async function addBlockedChannel(entry: BlockedChannel): Promise<void> {
   const list = await getBlockedChannels();
-  const exists = list.some(
-    (c) =>
-      (entry.id && c.id === entry.id) ||
-      (entry.handle && c.handle === entry.handle),
-  );
+  const entryName = entry.name?.trim().toLowerCase() ?? '';
+  const exists = list.some((c) => {
+    if (entry.id && c.id === entry.id) return true;
+    if (entry.handle && c.handle === entry.handle) return true;
+    if (entryName && c.name && c.name.trim().toLowerCase() === entryName) {
+      return true;
+    }
+    return false;
+  });
   console.log('[ytdb] 2. addBlockedChannel', { entry, exists, currentListSize: list.length });
   if (exists) return;
   await setBlockedChannels([...list, entry]);
@@ -132,14 +136,20 @@ export function onBlocklistChange(
 }
 
 export function isBlocked(
-  channel: { id?: string | null; handle?: string | null },
+  channel: { id?: string | null; handle?: string | null; name?: string | null },
   list: BlockedChannel[],
 ): boolean {
-  return list.some(
-    (c) =>
-      (!!channel.id && c.id === channel.id) ||
-      (!!channel.handle && c.handle === channel.handle),
-  );
+  const cardName = channel.name?.trim().toLowerCase() ?? '';
+  return list.some((c) => {
+    if (channel.id && c.id === channel.id) return true;
+    if (channel.handle && c.handle === channel.handle) return true;
+    // Fallback for cards with no channel link (e.g. sidebar yt-lockup-view-model):
+    // match on name when neither id nor handle is available on the card.
+    if (!channel.id && !channel.handle && cardName && c.name) {
+      return c.name.trim().toLowerCase() === cardName;
+    }
+    return false;
+  });
 }
 
 export async function getSettings(): Promise<Settings> {
