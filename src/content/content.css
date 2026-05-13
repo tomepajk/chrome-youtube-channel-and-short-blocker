@@ -148,3 +148,9 @@ ytd-app[dark] button.ytdb-watch-block-btn:hover,
     color: #ff5252;
   }
 }
+
+/* Watch-page-specific overrides (placed last so they win the cascade) */
+button.ytdb-watch-block-btn {
+  align-self: center;
+  margin-right: 20px;
+}
