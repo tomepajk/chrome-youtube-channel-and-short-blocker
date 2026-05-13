@@ -13,13 +13,11 @@ async function init(): Promise<void> {
   blockedChannels = await getBlockedChannels();
 
   onBlocklistChange((list) => {
-    console.log('[ytdb] 3. onBlocklistChange fired, new list size:', list.length, list);
     blockedChannels = list;
     resetAllHiding();
     reapplyHidingAll(blockedChannels);
   });
 
-  console.log('test');
   startBlockButtonDelegation();
   startCardObserver([
     (card) => processCardForHiding(card, blockedChannels),

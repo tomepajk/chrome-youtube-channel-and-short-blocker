@@ -44,9 +44,7 @@ function handleCardBlockClick(e: MouseEvent): void {
   e.preventDefault();
   e.stopPropagation();
 
-  console.log('[ytdb] 1. click handler fired', card);
   const ref = extractChannelFromCard(card);
-  console.log('[ytdb] 1b. extracted ref from card', ref);
   if (!ref.id && !ref.handle && !ref.name) return;
   const name = ref.name || ref.handle || 'channel';
   const entry: BlockedChannel = {

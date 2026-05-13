@@ -39,10 +39,9 @@ async function ensureSyncToLocalMigration(): Promise<void> {
       for (const k of keys) if (sync[k] !== undefined) toCopy[k] = sync[k];
       if (Object.keys(toCopy).length > 0) {
         await chrome.storage.local.set(toCopy);
-        console.log('[ytdb] migrated from sync to local:', Object.keys(toCopy));
       }
-    } catch (err) {
-      console.error('[ytdb] migration failed', err);
+    } catch {
+      // migration is best-effort; existing data stays in sync as a fallback
     }
   })();
   return migrationPromise;
@@ -64,8 +63,8 @@ async function safeSet(payload: Record<string, unknown>): Promise<void> {
   await ensureSyncToLocalMigration();
   try {
     await chrome.storage.local.set(payload);
-  } catch (err) {
-    console.error('[ytdb] safeSet FAILED', err, payload);
+  } catch {
+    // extension context invalidated or quota exceeded
   }
 }
 
@@ -109,10 +108,8 @@ export async function addBlockedChannel(entry: BlockedChannel): Promise<void> {
     }
     return false;
   });
-  console.log('[ytdb] 2. addBlockedChannel', { entry, exists, currentListSize: list.length });
   if (exists) return;
   await setBlockedChannels([...list, entry]);
-  console.log('[ytdb] 2b. setBlockedChannels written, new size:', list.length + 1);
 }
 
 export async function removeBlockedChannel(idOrHandle: string): Promise<void> {
