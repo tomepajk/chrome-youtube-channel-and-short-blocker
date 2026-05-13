@@ -1,10 +1,14 @@
 {
   "manifest_version": 3,
   "name": "YouTube Distraction Blocker",
-  "version": "0.1.0",
+  "version": "0.1.2",
   "description": "Block distracting YouTube channels. Hover any channel name and hit Block.",
-  "permissions": ["storage"],
-  "host_permissions": ["https://www.youtube.com/*"],
+  "permissions": [
+    "storage"
+  ],
+  "host_permissions": [
+    "https://www.youtube.com/*"
+  ],
   "background": {
     "service_worker": "src/background/index.ts",
     "type": "module"
@@ -25,9 +29,15 @@
   },
   "content_scripts": [
     {
-      "matches": ["https://www.youtube.com/*"],
-      "js": ["src/content/index.ts"],
-      "css": ["src/content/content.css"],
+      "matches": [
+        "https://www.youtube.com/*"
+      ],
+      "js": [
+        "src/content/index.ts"
+      ],
+      "css": [
+        "src/content/content.css"
+      ],
       "run_at": "document_start"
     }
   ]
