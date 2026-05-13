@@ -54,7 +54,7 @@ function renderBlocklist(list: BlockedChannel[]): void {
     btn.title = `Unblock ${entry.name || entry.handle}`;
     btn.setAttribute('aria-label', `Unblock ${entry.name || entry.handle}`);
     btn.addEventListener('click', () => {
-      void removeBlockedChannel(entry.id || entry.handle);
+      void removeBlockedChannel(entry);
     });
 
     li.append(channel, btn);

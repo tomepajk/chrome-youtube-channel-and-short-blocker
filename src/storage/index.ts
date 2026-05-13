@@ -112,11 +112,17 @@ export async function addBlockedChannel(entry: BlockedChannel): Promise<void> {
   await setBlockedChannels([...list, entry]);
 }
 
-export async function removeBlockedChannel(idOrHandle: string): Promise<void> {
+export async function removeBlockedChannel(
+  ref: { id?: string | null; handle?: string | null; name?: string | null },
+): Promise<void> {
   const list = await getBlockedChannels();
-  const next = list.filter(
-    (c) => c.id !== idOrHandle && c.handle !== idOrHandle,
-  );
+  const refName = ref.name?.trim().toLowerCase() ?? '';
+  const next = list.filter((c) => {
+    if (ref.id && c.id === ref.id) return false;
+    if (ref.handle && c.handle === ref.handle) return false;
+    if (refName && c.name && c.name.trim().toLowerCase() === refName) return false;
+    return true;
+  });
   if (next.length !== list.length) {
     await setBlockedChannels(next);
   }

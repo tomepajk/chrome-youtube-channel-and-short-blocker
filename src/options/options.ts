@@ -91,7 +91,7 @@ function render(): void {
     unblock.type = 'button';
     unblock.textContent = 'Unblock';
     unblock.addEventListener('click', () => {
-      void removeBlockedChannel(key);
+      void removeBlockedChannel(entry);
       selected.delete(key);
     });
 

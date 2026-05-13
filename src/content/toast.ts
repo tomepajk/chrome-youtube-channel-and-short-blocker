@@ -76,7 +76,7 @@ function dismiss(): void {
 
 export function showUndoToast(
   channelName: string,
-  idOrHandle: string,
+  ref: { id?: string | null; handle?: string | null; name?: string | null },
 ): void {
   const root = ensureRoot();
   const toast = root.querySelector('.toast') as HTMLElement;
@@ -89,7 +89,7 @@ export function showUndoToast(
   toast.classList.add('visible');
 
   const handler = () => {
-    void removeBlockedChannel(idOrHandle).then(dismiss);
+    void removeBlockedChannel(ref).then(dismiss);
   };
   currentUndoHandler = handler;
   undoBtn.addEventListener('click', handler);

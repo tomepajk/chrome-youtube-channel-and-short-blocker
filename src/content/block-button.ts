@@ -54,7 +54,7 @@ function handleCardBlockClick(e: MouseEvent): void {
     blockedAt: Date.now(),
   };
   void addBlockedChannel(entry).then(() => {
-    showUndoToast(name, ref.id || ref.handle || '');
+    showUndoToast(name, ref);
   });
 }
 
