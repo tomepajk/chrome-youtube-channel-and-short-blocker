@@ -13,11 +13,19 @@ ytd-rich-item-renderer:has(yt-lockup-view-model[data-ytdb-hidden="1"]) {
   display: none !important;
 }
 
+/* Cards we've processed: flex column so the block button can sit at the bottom */
+[data-ytdb-card="1"] {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  gap: 10px;
+}
+
 /* Block button on video cards (appended below card content) */
 button.ytdb-block-btn {
   display: block;
   width: calc(100% - 16px);
-  margin: 8px 8px 4px;
+  margin: auto 8px 4px;
   padding: 6px 10px;
   font: 500 12px Roboto, Arial, sans-serif;
   color: #606060;
@@ -73,9 +81,10 @@ ytd-app[dark] button.ytdb-block-btn:hover,
   }
 }
 
-/* Block channel button on the channel page header (sits in yt-flexible-actions-view-model) */
+/* Block channel button on the channel page header and watch-page owner row */
 yt-flexible-actions-view-model > button.ytdb-channel-block-btn,
-button.ytdb-channel-block-btn {
+button.ytdb-channel-block-btn,
+button.ytdb-watch-block-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -97,34 +106,43 @@ button.ytdb-channel-block-btn {
 }
 
 html[dark] button.ytdb-channel-block-btn,
+html[dark] button.ytdb-watch-block-btn,
 ytd-app[dark] button.ytdb-channel-block-btn,
-[dark] button.ytdb-channel-block-btn {
+ytd-app[dark] button.ytdb-watch-block-btn,
+[dark] button.ytdb-channel-block-btn,
+[dark] button.ytdb-watch-block-btn {
   color: #f1f1f1;
   background: rgba(255, 255, 255, 0.1);
   border-color: rgba(255, 255, 255, 0.2);
 }
 
-button.ytdb-channel-block-btn:hover {
+button.ytdb-channel-block-btn:hover,
+button.ytdb-watch-block-btn:hover {
   background: rgba(204, 0, 0, 0.12);
   border-color: rgba(204, 0, 0, 0.55);
   color: #cc0000;
 }
 
 html[dark] button.ytdb-channel-block-btn:hover,
+html[dark] button.ytdb-watch-block-btn:hover,
 ytd-app[dark] button.ytdb-channel-block-btn:hover,
-[dark] button.ytdb-channel-block-btn:hover {
+ytd-app[dark] button.ytdb-watch-block-btn:hover,
+[dark] button.ytdb-channel-block-btn:hover,
+[dark] button.ytdb-watch-block-btn:hover {
   background: rgba(255, 82, 82, 0.18);
   border-color: rgba(255, 82, 82, 0.6);
   color: #ff5252;
 }
 
 @media (prefers-color-scheme: dark) {
-  button.ytdb-channel-block-btn {
+  button.ytdb-channel-block-btn,
+  button.ytdb-watch-block-btn {
     color: #f1f1f1;
     background: rgba(255, 255, 255, 0.1);
     border-color: rgba(255, 255, 255, 0.2);
   }
-  button.ytdb-channel-block-btn:hover {
+  button.ytdb-channel-block-btn:hover,
+  button.ytdb-watch-block-btn:hover {
     background: rgba(255, 82, 82, 0.18);
     border-color: rgba(255, 82, 82, 0.6);
     color: #ff5252;

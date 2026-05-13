@@ -5,6 +5,7 @@ import { injectBlockButton, startBlockButtonDelegation } from './block-button';
 import { startCardObserver } from './observer';
 import { startPageRouter } from './page-router';
 import { startChannelPageWatcher } from './channel-page';
+import { startWatchPageWatcher } from './watch-page';
 import { startShorts } from './shorts';
 
 let blockedChannels: BlockedChannel[] = [];
@@ -26,6 +27,7 @@ async function init(): Promise<void> {
 
   startPageRouter();
   startChannelPageWatcher();
+  startWatchPageWatcher();
   startShorts();
 
 }

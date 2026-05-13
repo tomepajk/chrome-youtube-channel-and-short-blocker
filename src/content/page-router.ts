@@ -1,9 +1,12 @@
 import { getBlockedChannels, isBlocked } from '../storage';
-import { parseChannelHref, type ChannelRef } from './extract-channel';
+import {
+  extractChannelFromWatchPage,
+  parseChannelHref,
+  type ChannelRef,
+} from './extract-channel';
+import { WATCH_OWNER_LINK_SELECTOR } from './selectors';
 
 const REDIRECT_TARGET = 'https://www.youtube.com/';
-const WATCH_OWNER_SELECTOR =
-  'ytd-video-owner-renderer a[href^="/@"], ytd-video-owner-renderer a[href^="/channel/"], #owner a[href^="/@"], #owner a[href^="/channel/"]';
 const WATCH_TIMEOUT_MS = 5000;
 
 export function getCurrentChannelFromUrl(): ChannelRef {
@@ -59,11 +62,13 @@ async function checkChannelPage(): Promise<void> {
 
 async function checkWatchPage(): Promise<void> {
   if (location.pathname !== '/watch') return;
-  const link = await waitForElement(WATCH_OWNER_SELECTOR, WATCH_TIMEOUT_MS);
-  if (!link) return;
+  const firstLink = await waitForElement(WATCH_OWNER_LINK_SELECTOR, WATCH_TIMEOUT_MS);
+  if (!firstLink) return;
   if (location.pathname !== '/watch') return;
-  const ref = parseChannelHref((link as HTMLAnchorElement).getAttribute('href'));
-  if (!ref.id && !ref.handle) return;
+
+  const ref = extractChannelFromWatchPage();
+  if (!ref || (!ref.id && !ref.handle && !ref.name)) return;
+
   const blocked = await getBlockedChannels();
   if (isBlocked(ref, blocked)) {
     pauseAllMedia();

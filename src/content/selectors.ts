@@ -20,3 +20,12 @@ export const CHANNEL_NAME_TEXT_SELECTOR =
 
 // Localized ("Go to channel <name>"); used only as a fallback.
 export const CHANNEL_AVATAR_LABEL_SELECTOR = '[aria-label^="Go to channel "]';
+
+export const WATCH_OWNER_LINK_SELECTOR =
+  'ytd-video-owner-renderer a[href^="/@"], ytd-video-owner-renderer a[href^="/channel/"], #owner a[href^="/@"], #owner a[href^="/channel/"]';
+
+// Where to inject the watch-page block button.
+export const WATCH_OWNER_CONTAINER_SELECTORS = [
+  'ytd-video-owner-renderer',
+  '#owner',
+];

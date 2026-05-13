@@ -137,9 +137,10 @@ export function isBlocked(
   list: BlockedChannel[],
 ): boolean {
   const cardName = channel.name?.trim().toLowerCase() ?? '';
-  return list.some((c) => {
+  const isBlockedValue =  list.some((c) => {
     if (channel.id && c.id === channel.id) return true;
     if (channel.handle && c.handle === channel.handle) return true;
+    if (channel.name && c.name === channel.name) return true;
     // Fallback for cards with no channel link (e.g. sidebar yt-lockup-view-model):
     // match on name when neither id nor handle is available on the card.
     if (!channel.id && !channel.handle && cardName && c.name) {
@@ -147,6 +148,8 @@ export function isBlocked(
     }
     return false;
   });
+
+  return isBlockedValue;
 }
 
 export async function getSettings(): Promise<Settings> {

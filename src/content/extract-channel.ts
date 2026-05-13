@@ -1,6 +1,7 @@
 import {
   CHANNEL_AVATAR_LABEL_SELECTOR,
   CHANNEL_NAME_TEXT_SELECTOR,
+  WATCH_OWNER_LINK_SELECTOR,
 } from './selectors';
 
 export type ChannelRef = {
@@ -67,4 +68,20 @@ export function extractChannelFromCard(card: Element): ChannelRef {
   if (!name) name = findChannelNameFallback(card);
 
   return { id, handle, name };
+}
+
+// Extracts the channel of the currently-playing video on /watch by reading
+// the owner section. The owner usually has two links to the same channel
+// (avatar + name); we prefer the text-bearing one so we also capture the name.
+export function extractChannelFromWatchPage(): ChannelRef | null {
+  const links = document.querySelectorAll<HTMLAnchorElement>(
+    WATCH_OWNER_LINK_SELECTOR,
+  );
+  if (!links.length) return null;
+  const linkWithText = Array.from(links).find((a) => a.textContent?.trim());
+  const sourceLink = linkWithText ?? links[0];
+  return {
+    ...parseChannelHref(sourceLink.getAttribute('href')),
+    name: linkWithText?.textContent?.trim() || null,
+  };
 }
