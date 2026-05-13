@@ -1,6 +1,6 @@
 import { addBlockedChannel } from '../storage';
 import type { BlockedChannel } from '../storage/types';
-import { extractChannelFromWatchPage } from './extract-channel';
+import { extractChannelFromWatchPage, type ChannelRef } from './extract-channel';
 import { WATCH_OWNER_CONTAINER_SELECTORS } from './selectors';
 
 const REDIRECT_TARGET = 'https://www.youtube.com/';
@@ -14,15 +14,20 @@ function findOwnerContainer(): Element | null {
   return null;
 }
 
-export function maybeInjectWatchBlockButton(): void {
-  if (location.pathname !== '/watch') return;
+function hasUsableChannelRef(ref: ChannelRef | null): ref is ChannelRef {
+  return !!ref && (!!ref.id || !!ref.handle || !!ref.name);
+}
+
+function findInjectionTarget(): Element | null {
+  if (location.pathname !== '/watch') return null;
   const container = findOwnerContainer();
-  if (!container) return;
-  if (container.querySelector(`.${BTN_CLASS}`)) return;
+  if (!container) return null;
+  if (container.querySelector(`.${BTN_CLASS}`)) return null;
+  if (!hasUsableChannelRef(extractChannelFromWatchPage())) return null;
+  return container;
+}
 
-  const ref = extractChannelFromWatchPage();
-  if (!ref || (!ref.id && !ref.handle && !ref.name)) return;
-
+function injectWatchBlockButton(container: Element): void {
   const button = document.createElement('button');
   button.className = BTN_CLASS;
   button.type = 'button';
@@ -31,26 +36,35 @@ export function maybeInjectWatchBlockButton(): void {
   container.appendChild(button);
 }
 
-function handleWatchBlockClick(e: MouseEvent): void {
-  const target = e.target as Element | null;
-  if (!target) return;
-  const btn = target.closest?.(`.${BTN_CLASS}`);
-  if (!btn) return;
-  e.preventDefault();
-  e.stopPropagation();
+export function maybeInjectWatchBlockButton(): void {
+  const container = findInjectionTarget();
+  if (container) injectWatchBlockButton(container);
+}
 
+function findClickedBlockButton(e: MouseEvent): Element | null {
+  const target = e.target as Element | null;
+  return target?.closest?.(`.${BTN_CLASS}`) ?? null;
+}
+
+function blockCurrentWatchChannel(): void {
   const ref = extractChannelFromWatchPage();
-  if (!ref || (!ref.id && !ref.handle && !ref.name)) return;
-  const name = ref.name || ref.handle || 'channel';
+  if (!hasUsableChannelRef(ref)) return;
   const entry: BlockedChannel = {
     id: ref.id ?? '',
     handle: ref.handle ?? '',
-    name,
+    name: ref.name || ref.handle || 'channel',
     blockedAt: Date.now(),
   };
   void addBlockedChannel(entry).then(() => {
     location.replace(REDIRECT_TARGET);
   });
+}
+
+function handleWatchBlockClick(e: MouseEvent): void {
+  if (!findClickedBlockButton(e)) return;
+  e.preventDefault();
+  e.stopPropagation();
+  blockCurrentWatchChannel();
 }
 
 export function startWatchPageWatcher(): void {
